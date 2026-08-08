@@ -17,7 +17,7 @@ yAI (Your Artificial Intelligence) is a fully privacy-focused, on-device AI assi
 
 ## 🏗️ Project Architecture
 ```
-BanglaLocalAI/
+yAI/
 ├── app/
 │   ├── src/
 │   │   ├── main/
