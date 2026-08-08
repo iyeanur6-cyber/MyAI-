@@ -1,9 +1,5 @@
 #include <jni.h>
 #include <string>
-#include <android/log.h>
-
-#define LOG_TAG "yAI_Native"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_banglalocalai_MainActivity_generateResponse(
@@ -12,15 +8,17 @@ Java_com_example_banglalocalai_MainActivity_generateResponse(
         jstring model_path_str,
         jstring prompt_str) {
 
-    const char *model_path = env->GetStringUTFChars(model_path_str, 0);
     const char *prompt = env->GetStringUTFChars(prompt_str, 0);
+    std::string userPrompt(prompt);
 
-    LOGI("Model Loading Path: %s", model_path);
-    LOGI("User Prompt Received: %s", prompt);
+    std::string response;
 
-    std::string response = "ধন্যবাদ! আমি আপনার লোকাল এআই সহকারী। আমি কিভাবে সাহায্য করতে পারি?";
+    if (userPrompt.find("Context:") != std::string::npos || userPrompt.find("তথ্য:") != std::string::npos) {
+        response = "অনলাইন থেকে প্রাপ্ত তথ্যের ভিত্তিতে বিশ্লেষণ করা হচ্ছে: " + userPrompt;
+    } else {
+        response = "আপনার প্রম্পট প্রসেস করা হয়েছে: " + userPrompt;
+    }
 
-    env->ReleaseStringUTFChars(model_path_str, model_path);
     env->ReleaseStringUTFChars(prompt_str, prompt);
 
     return env->NewStringUTF(response.c_str());
