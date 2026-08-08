@@ -1,7 +1,10 @@
 package com.example.banglalocalai;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -19,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -67,6 +71,32 @@ public class MainActivity extends AppCompatActivity {
 
         downloadBtn.setOnClickListener(v -> startModelDownload());
         sendBtn.setOnClickListener(v -> processUserInput());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_history) {
+            Intent intent = new Intent(this, HistoryActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_delete) {
+            new Thread(() -> {
+                db.chatDao().clearHistory();
+                runOnUiThread(() -> {
+                    chatView.setText("");
+                    chatView.append("[System]: সমস্ত চ্যাট হিস্ট্রি মুছে ফেলা হয়েছে।");
+                });
+            }).start();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void checkModelExistence() {
@@ -128,9 +158,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadPreviousChat() {
         new Thread(() -> {
-            for (ChatEntity chat : db.chatDao().getAllMessages()) {
-                runOnUiThread(() -> chatView.append("\n" + chat.sender + ": " + chat.message));
-            }
+            List<ChatEntity> history = db.chatDao().getAllMessages();
+            runOnUiThread(() -> {
+                for (ChatEntity chat : history) {
+                    chatView.append("\n" + chat.sender + ": " + chat.message);
+                }
+            });
         }).start();
     }
 
@@ -155,11 +188,11 @@ public class MainActivity extends AppCompatActivity {
 
             String fullPrompt;
             if (!context.isEmpty()) {
-                fullPrompt = "<|im_start|>system\nYou are a helpful Bangla assistant.<|im_end|>\n" +
-                        "<|im_start|>user\nContext: " + context + "\nQuestion: " + userQuery + "<|im_end|>\n" +
+                fullPrompt = "<|im_start|>system\nতুমি একজন অভিজ্ঞ বাংলা এআই সহকারী। নিচে দেওয়া তথ্যের ভিত্তিতে উত্তর দাও।<|im_end|>\n" +
+                        "<|im_start|>user\nতথ্য: " + context + "\nপ্রশ্ন: " + userQuery + "<|im_end|>\n" +
                         "<|im_start|>assistant\n";
             } else {
-                fullPrompt = "<|im_start|>system\nYou are a helpful Bangla assistant.<|im_end|>\n" +
+                fullPrompt = "<|im_start|>system\nতুমি একজন অভিজ্ঞ বাংলা এআই সহকারী। সর্বদা বাংলায় উত্তর দেবে।<|im_end|>\n" +
                         "<|im_start|>user\n" + userQuery + "<|im_end|>\n" +
                         "<|im_start|>assistant\n";
             }
@@ -194,7 +227,5 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onDestroy();
     }
-                 }
-            Total main activity ta lekho
-
-User responce er process o add hobe
+                    }
+                    
