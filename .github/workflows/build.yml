@@ -31,6 +31,10 @@ jobs:
           cmdline-tools-version: 11076708
           accept-android-sdk-licenses: true
 
+      - name: Install NDK and CMake
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.1.8937393" "cmake;3.22.1"
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
