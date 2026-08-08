@@ -4,7 +4,7 @@
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_banglalocalai_MainActivity_generateResponse(
         JNIEnv* env,
-        jobject,
+        jobject instance,
         jstring model_path_str,
         jstring prompt_str) {
 
