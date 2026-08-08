@@ -15,8 +15,12 @@ android {
 
         externalNativeBuild {
             cmake {
-                cppFlags("")
+                cppFlags("-std=c++17")
             }
+        }
+        
+        ndk {
+            abiFilters.addAll(setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
     }
 
@@ -30,8 +34,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     externalNativeBuild {
         cmake {
